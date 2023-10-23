@@ -31,10 +31,10 @@ export default () => {
 
         checkValidUrl(url, state.useUrl)
           .then((result) => {
+            const button = document.querySelector('button[type="submit"]')
+            button.disabled = true;
             parser(url)
               .then((res) => {
-                const button = document.querySelector('button[type="submit"]')
-                button.disabled = true;
                 if (res === 'noRSS') {
                   newState(state).status = 'noRSS';
                   button.disabled = false;
@@ -43,9 +43,9 @@ export default () => {
                 state.useUrl.push(result);
                 input.value = '';
                 input.focus();
-                button.disabled = false;
               })
-              .catch((err) => newState(state).status = 'NetworkError');
+              .catch((_err) => newState(state).status = 'NetworkError');
+            button.disabled = false;
           })
           .catch((err) => {
             newState(state).status = err;

@@ -16,8 +16,8 @@ axiosGet(url)
       return Promise.resolve('noRSS');
     }
     const feedName = newDocument.querySelector('title').innerHTML;
-
     const posts = newDocument.querySelectorAll('item');
+    
     console.log(posts);
   })
   .catch((err) => Promise.reject(err))
