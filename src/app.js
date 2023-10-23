@@ -2,15 +2,16 @@ import checkValidUrl from "./script/checkValidUrl.js";
 import { newState } from "./script/view.js";
 import i18next from 'i18next';
 import ru from './locales/ru.js';
+import parser from "./script/parser.js";
 
 export default () => {
     const form = document.querySelector('form');
 
     const state = {
         useUrl: [],
-        nowUrlLink: '',
         validUrl: '',
         status: '',
+        feeds: {}
     };
 
     i18next.init({
@@ -30,10 +31,21 @@ export default () => {
 
         checkValidUrl(url, state.useUrl)
           .then((result) => {
-            state.useUrl.push(result);
-            newState(state).nowUrlLink = result;
-            input.value = '';
-            input.focus();
+            parser(url)
+              .then((res) => {
+                const button = document.querySelector('button[type="submit"]')
+                button.disabled = true;
+                if (res === 'noRSS') {
+                  newState(state).status = 'noRSS';
+                  button.disabled = false;
+                  return;
+                }
+                state.useUrl.push(result);
+                input.value = '';
+                input.focus();
+                button.disabled = false;
+              })
+              .catch((err) => newState(state).status = 'NetworkError');
           })
           .catch((err) => {
             newState(state).status = err;

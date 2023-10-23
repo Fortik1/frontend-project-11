@@ -15,5 +15,4 @@ export default (url, urlList) =>
   shema.validate(url)
     .then((result) => resolve(result))
     .catch((err) => reject(err.message));
-  
   });

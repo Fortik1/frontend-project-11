@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Fortik1/frontend-project-11#readme",
   "dependencies": {
+    "axios": "^1.5.1",
     "bootstrap": "^5.2.3",
     "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.3",
