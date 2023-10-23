@@ -1,19 +1,21 @@
 import onChange from 'on-change';
+import i18next from 'i18next';
 
 export const newState = (state) => onChange(state, (path, value) => {
   const textDanger = document.querySelector('.text-danger');
   const input = document.querySelector('#url-input');
   textDanger.innerHTML = '';
   input.classList.remove('is-invalid');
+  console.log(value);
 
     switch(value) {
       case 'repeat': {
-        textDanger.innerHTML = 'RSS уже существует';
+        textDanger.innerHTML = i18next.t(value);
         input.classList.add('is-invalid');
         break;
       }
-      case 'Error URL': {
-        textDanger.innerHTML = 'Ссылка должна быть валидным URL';
+      case 'ErrorValidURL': {
+        textDanger.innerHTML = i18next.t(value);
         input.classList.add('is-invalid');
         break;
       }

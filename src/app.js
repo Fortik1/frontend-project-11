@@ -1,5 +1,7 @@
 import checkValidUrl from "./script/checkValidUrl.js";
 import { newState } from "./script/view.js";
+import i18next from 'i18next';
+import ru from './locales/ru.js';
 
 export default () => {
     const form = document.querySelector('form');
@@ -8,8 +10,16 @@ export default () => {
         useUrl: [],
         nowUrlLink: '',
         validUrl: '',
-        error: '',
+        status: '',
     };
+
+    i18next.init({
+      lng: 'ru',
+      debag: true, 
+      resources: {
+        ru
+      }
+    })
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -18,19 +28,15 @@ export default () => {
         const url = formData.get('url').trim();
         const input = document.querySelector('#url-input');
 
-        checkValidUrl(url)
+        checkValidUrl(url, state.useUrl)
           .then((result) => {
-            if (!state.useUrl.includes(result)) {
-              state.useUrl.push(result);
-              newState(state).nowUrlLink = result;
-              input.value = '';
-              input.focus();
-            } else {
-              newState(state).error = 'repeat';
-            }
+            state.useUrl.push(result);
+            newState(state).nowUrlLink = result;
+            input.value = '';
+            input.focus();
           })
-          .catch((_err) => {
-            newState(state).error = 'Error URL';
+          .catch((err) => {
+            newState(state).status = err;
           });
     });
 }
