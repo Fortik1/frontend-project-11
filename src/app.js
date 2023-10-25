@@ -9,7 +9,7 @@ export default () => {
   const form = document.querySelector('form');
 
   const state = {
-    useUrl: [],
+    useUrl: ['https://lorem-rss.herokuapp.com/feed?length=3&unit=second&interval=5'],
     validUrl: '',
     status: '',
     feeds: [],
@@ -43,9 +43,9 @@ export default () => {
     stateS.useUrl.forEach((url) => {
       parser(url)
         .then((res) => {
-          console.log(res, '2');
-          const newPost = getUniqueArr(res.posts, stateS);
-          newState(state).posts = [...newPost, ...stateS.posts];
+          //const newPost = getUniqueArr(res.posts, stateS);
+          render(res.posts);
+          newState(state).posts = [...res.posts, ...stateS.posts];
         })
         .catch((err) => console.log(err))
         .finally(() => setTimeout(() => update(stateS), 5000));
@@ -71,10 +71,10 @@ export default () => {
             }
             state.feeds.push(res.feedName);
             const newPost = getUniqueArr(res.posts);
-
             newPost.forEach((element) => {
               state.posts.push(element);
             });
+            console.log(state)
             newState(state).state = 'OK';
             render(newPost);
             createFeedHTML(res);
@@ -91,15 +91,14 @@ export default () => {
           .catch((err) => {
             newState(state).status = err;
             button.disabled = false;
-          })
-          .finally(() => update(state));
+          });
       })
       .catch((err) => {
         newState(state).status = err;
         button.disabled = false;
       });
   });
-  update(newState(state));
+  update(state);
 };
 
 // const nameSet = new Set(arr1.map(el => el.name));

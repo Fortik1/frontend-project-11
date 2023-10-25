@@ -1,5 +1,5 @@
 import axios from 'axios';
-import uniqueId from 'lodash';
+import { uniqueId } from 'lodash';
 
 const axiosGet = (url) => axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
   .then((result) => {
