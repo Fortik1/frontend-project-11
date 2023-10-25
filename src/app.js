@@ -53,17 +53,17 @@ export default () => {
                 newPost.forEach(element => {
                   state.posts.push(element);
                 });
+                newState(state).state = 'OK';
                 render(newPost);
                 createFeedHTML(res);
 
-                newState(state).state = 'OK';
                 state.useUrl.push(result);
                 input.value = '';
                 input.focus();
                 button.disabled = false;
               })
-              .catch((_err) => {
-                newState(state).status = 'NetworkError';
+              .catch((err) => {
+                newState(state).status = err;
                 button.disabled = false;
               });
           })

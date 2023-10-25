@@ -27,7 +27,7 @@ export default (url) =>
 axiosGet(url)
   .then((newDocument) => {
     if (newDocument.querySelector('parsererror')) {
-      return Promise.resolve('noRSS');
+      return Promise.reject('noRSS');
     }
 
     const description = newDocument.querySelector('description').innerHTML;

@@ -42,7 +42,7 @@ const createPostHTML = (post) => {
   li.appendChild(a);
   li.appendChild(button);
 
-  postUl.appendChild(li);
+  postUl.prepend(li);
 };
 
 export const createFeedHTML = (name) => {
@@ -61,7 +61,7 @@ export const createFeedHTML = (name) => {
 
   li.appendChild(h3);
   li.appendChild(p);
-  feedUl.appendChild(li);
+  feedUl.prepend(li);
 }
 
 export default (data) => {
