@@ -32,21 +32,23 @@ export default () => {
     document.querySelector('.modal-body').textContent = description;
   };
 
-  const getUniqueArr = (newArr) => {
-    const nameSet = new Set(state.posts.map((el) => el.title));
+  const getUniqueArr = (newArr, stateS = state) => {
+    const nameSet = new Set(stateS.posts.map((el) => el.title));
     const uniqArr = newArr.filter((el) => !nameSet.has(el.title));
     return uniqArr;
   };
 
   //  https://lorem-rss.herokuapp.com/feed?length=3&unit=second&interval=5
-  const update = () => {
-    state.useUrl.forEach((url) => {
+  const update = (stateS) => {
+    stateS.useUrl.forEach((url) => {
       parser(url)
         .then((res) => {
-          const newPost = getUniqueArr(res.posts);
-          newState(state).posts = [...newPost, ...state.posts];
+          console.log(res, '2');
+          const newPost = getUniqueArr(res.posts, stateS);
+          newState(state).posts = [...newPost, ...stateS.posts];
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err))
+        .finally(() => setTimeout(() => update(stateS), 5000));
     });
   };
 
@@ -89,15 +91,15 @@ export default () => {
           .catch((err) => {
             newState(state).status = err;
             button.disabled = false;
-          });
+          })
+          .finally(() => update(state));
       })
       .catch((err) => {
         newState(state).status = err;
         button.disabled = false;
       });
   });
-  const time = () => setTimeout(() => { update(); time(); }, 5000);
-  time();
+  update(newState(state));
 };
 
 // const nameSet = new Set(arr1.map(el => el.name));

@@ -4,7 +4,7 @@ import uniqueId from 'lodash';
 const axiosGet = (url) => axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
   .then((result) => {
     const parser = new DOMParser();
-    // console.log(parser.parseFromString(result.data.contents, 'text/xml'));
+
     return Promise.resolve(parser.parseFromString(result.data.contents, 'text/xml'));
   })
   .catch((err) => Promise.reject(err.message));
