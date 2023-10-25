@@ -7,7 +7,7 @@ const createElementCard = (name) => {
 
   const divCardBody = document.createElement('div');
   divCardBody.classList.add('card-body');
-  
+
   const title = document.createElement('h2');
   title.classList.add('card-title', 'h4');
   title.innerHTML = name;
@@ -16,14 +16,14 @@ const createElementCard = (name) => {
   divCardBody.appendChild(ul);
   divCard.appendChild(divCardBody);
   return divCard;
-}
+};
 
 const addEvent = (e, a) => {
   e.addEventListener('click', () => {
     a.classList.replace('fw-bold', 'fw-normal');
     a.classList.add('link-secondary');
   });
-}
+};
 
 const createPostHTML = (post) => {
   const postUl = document.querySelector('.posts').querySelector('ul');
@@ -34,17 +34,17 @@ const createPostHTML = (post) => {
   a.href = post.link;
   a.classList.add('fw-bold');
   a.setAttribute('data-id', post.id);
-  a.setAttribute('target', "_blank");
-  a.setAttribute("el", "noopener noreferrer");
+  a.setAttribute('target', '_blank');
+  a.setAttribute('el', 'noopener noreferrer');
   a.innerHTML = post.title;
 
   const button = document.createElement('button');
-  button.setAttribute("type", "button");
-  button.setAttribute("data-id", post.id);
-  button.setAttribute("data-bs-toggle", "modal");
-  button.setAttribute("data-bs-target", "#modal");
+  button.setAttribute('type', 'button');
+  button.setAttribute('data-id', post.id);
+  button.setAttribute('data-bs-toggle', 'modal');
+  button.setAttribute('data-bs-target', '#modal');
   button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-  button.innerHTML = "Просмотр";
+  button.innerHTML = 'Просмотр';
 
   li.appendChild(a);
   li.appendChild(button);
@@ -65,13 +65,13 @@ export const createFeedHTML = (name) => {
   h3.innerHTML = name.feedName;
 
   const p = document.createElement('p');
-  p.classList.add('m-0', 'small', 'text-black-50')
+  p.classList.add('m-0', 'small', 'text-black-50');
   p.innerHTML = name.description;
 
   li.appendChild(h3);
   li.appendChild(p);
   feedUl.prepend(li);
-}
+};
 
 export default (data) => {
   if (!document.querySelector('.posts').innerHTML) {
@@ -79,7 +79,7 @@ export default (data) => {
     document.querySelector('.feeds').appendChild(createElementCard('Фиды'));
   }
 
-  data.forEach(element => {
+  data.forEach((element) => {
     createPostHTML(element);
   });
-}
+};

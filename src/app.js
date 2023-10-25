@@ -1,108 +1,104 @@
-import checkValidUrl from "./script/checkValidUrl.js";
-import { newState } from "./script/view.js";
 import i18next from 'i18next';
+import checkValidUrl from './script/checkValidUrl.js';
+import newState from './script/view.js';
 import ru from './locales/ru.js';
-import parser from "./script/parser.js";
-import render, { createFeedHTML } from "./script/render.js";
+import parser from './script/parser.js';
+import render, { createFeedHTML } from './script/render.js';
 
 export default () => {
-    const form = document.querySelector('form');
+  const form = document.querySelector('form');
 
-    const state = {
-        useUrl: [],
-        validUrl: '',
-        status: '',
-        feeds: [],
-        posts: [],
-    };
+  const state = {
+    useUrl: [],
+    validUrl: '',
+    status: '',
+    feeds: [],
+    posts: [],
+  };
 
-    i18next.init({
-      lng: 'ru',
-      debag: true, 
-      resources: {
-        ru
-      }
-    })
+  i18next.init({
+    lng: 'ru',
+    debag: true,
+    resources: {
+      ru,
+    },
+  });
 
-    const modalButton = (el) => {
-      const postId = el.dataset.id;
-      const post = state.posts.find(({ id }) => postId === id);
-      const { title, description } = post;
-      document.querySelector('.modal-header').textContent = title;
-      document.querySelector('.modal-body').textContent = description;
-    }
+  const modalButton = (el) => {
+    const postId = el.dataset.id;
+    const post = state.posts.find(({ id }) => postId === id);
+    const { title, description } = post;
+    document.querySelector('.modal-header').textContent = title;
+    document.querySelector('.modal-body').textContent = description;
+  };
 
-    const getUniqueArr = (newArr) => {
-      const nameSet = new Set(state.posts.map(el => el.title));
-      const uniqArr = newArr.filter(el => !nameSet.has(el.title));
-      return uniqArr;
-    }
+  const getUniqueArr = (newArr) => {
+    const nameSet = new Set(state.posts.map((el) => el.title));
+    const uniqArr = newArr.filter((el) => !nameSet.has(el.title));
+    return uniqArr;
+  };
 
-//  https://lorem-rss.herokuapp.com/feed?length=3&unit=second&interval=5
-    const update = () => {
-      state.useUrl.map(url => {
-        parser(url)
+  //  https://lorem-rss.herokuapp.com/feed?length=3&unit=second&interval=5
+  const update = () => {
+    state.useUrl.forEach((url) => {
+      parser(url)
+        .then((res) => {
+          const newPost = getUniqueArr(res.posts);
+          newState(state).posts = [...newPost, ...state.posts];
+        })
+        .catch((err) => console.log(err));
+    });
+  };
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const url = formData.get('url').trim();
+    const input = document.querySelector('#url-input');
+    const button = document.querySelector('button[type="submit"]');
+    button.disabled = true;
+    checkValidUrl(url, state.useUrl)
+      .then((result) => {
+        parser(result)
           .then((res) => {
+            if (res === 'noRSS') {
+              newState(state).status = 'noRSS';
+              button.disabled = false;
+              return;
+            }
+            state.feeds.push(res.feedName);
             const newPost = getUniqueArr(res.posts);
-            newState(state).posts = [ ...newPost, ...state.posts ];
-          })
-          .catch((err) => console.log(err));
-      });
-    }
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const formData = new FormData(e.target);
-        const url = formData.get('url').trim();
-        const input = document.querySelector('#url-input');
-        const button = document.querySelector('button[type="submit"]');
-        button.disabled = true;
-        checkValidUrl(url, state.useUrl)
-          .then((result) => {
-            parser(result)
-              .then((res) => {
-                if (res === 'noRSS') {
-                  newState(state).status = 'noRSS';
-                  button.disabled = false;
-                  return;
-                }
-                state.feeds.push(res.feedName);
-                const newPost = getUniqueArr(res.posts);
-
-                newPost.forEach(element => {
-                  state.posts.push(element);
-                });
-                newState(state).state = 'OK';
-                render(newPost);
-                createFeedHTML(res);
-                document.querySelectorAll('[data-bs-toggle]')
-                  .forEach((el) => {
-                    el.addEventListener('click', () => modalButton(el))
-                  })
-
-                state.useUrl.push(result);
-                input.value = '';
-                input.focus();
-                button.disabled = false;
-              })
-              .catch((err) => {
-                newState(state).status = err;
-                button.disabled = false;
+            newPost.forEach((element) => {
+              state.posts.push(element);
+            });
+            newState(state).state = 'OK';
+            render(newPost);
+            createFeedHTML(res);
+            document.querySelectorAll('[data-bs-toggle]')
+              .forEach((el) => {
+                el.addEventListener('click', () => modalButton(el));
               });
+
+            state.useUrl.push(result);
+            input.value = '';
+            input.focus();
+            button.disabled = false;
           })
           .catch((err) => {
             newState(state).status = err;
             button.disabled = false;
           });
-    });
-const time = () => setTimeout(() => { update(); time() }, 5000);
-time();
-}
-
-
-
-
+      })
+      .catch((err) => {
+        newState(state).status = err;
+        button.disabled = false;
+      });
+  });
+  const time = () => setTimeout(() => { update(); time(); }, 5000);
+  time();
+};
 
 // const nameSet = new Set(arr1.map(el => el.name));
 // const newArr = arr2.filter(el => !nameSet.has(el.name));

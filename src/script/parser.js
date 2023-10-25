@@ -1,34 +1,34 @@
 import axios from 'axios';
-import _ from 'lodash';
+import uniqueId from 'lodash';
 
-const axiosGet = (url) =>
-  axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
-    .then((result) => {
-      const parser = new DOMParser();
-      //console.log(parser.parseFromString(result.data.contents, 'text/xml'));
-      return Promise.resolve(parser.parseFromString(result.data.contents, 'text/xml'));
-    })
-    .catch((err) => Promise.reject(err.message));
+const axiosGet = (url) => axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
+  .then((result) => {
+    const parser = new DOMParser();
+    // console.log(parser.parseFromString(result.data.contents, 'text/xml'));
+    return Promise.resolve(parser.parseFromString(result.data.contents, 'text/xml'));
+  })
+  .catch((err) => Promise.reject(err.message));
 
 const getPosts = (postsNodeList) => {
   const posts = [];
-  postsNodeList.forEach(element => {
+  postsNodeList.forEach((element) => {
     const getSelector = (selector) => element.querySelector(selector).textContent;
-    const id = _.uniqueId();
+    const id = uniqueId();
     const title = getSelector('title');
     const link = getSelector('link');
     const description = getSelector('description');
 
-    posts.push({ id, title, link, description});
-  })
+    posts.push({
+      id, title, link, description,
+    });
+  });
   return posts;
 };
 
-export default (url) => 
-axiosGet(url)
+export default (url) => axiosGet(url)
   .then((newDocument) => {
     if (newDocument.querySelector('parsererror')) {
-      return Promise.reject('noRSS');
+      throw new Error('noRSS');
     }
     console.log(url);
     console.log(newDocument);
@@ -39,5 +39,4 @@ axiosGet(url)
     const feedsPosts = { feedName, description, posts: getPosts(postsNodeList) };
     return Promise.resolve(feedsPosts);
   })
-  .catch((err) => Promise.reject(err))
-
+  .catch((err) => Promise.reject(err));
