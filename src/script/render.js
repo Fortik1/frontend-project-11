@@ -42,6 +42,10 @@ const createPostHTML = (post) => {
   li.appendChild(a);
   li.appendChild(button);
 
+  li.addEventListener('click', () => {
+    a.classList.replace('fw-bold', 'fw-normal');
+    a.classList.add('link-secondary');
+  });
   postUl.prepend(li);
 };
 
@@ -69,7 +73,7 @@ export default (data) => {
     document.querySelector('.posts').appendChild(createElementCard('Посты'));
     document.querySelector('.feeds').appendChild(createElementCard('Фиды'));
   }
-  console.log(data);
+
   data.forEach(element => {
     createPostHTML(element);
   });

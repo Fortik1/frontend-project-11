@@ -5,6 +5,7 @@ const axiosGet = (url) =>
   axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
     .then((result) => {
       const parser = new DOMParser();
+      //console.log(parser.parseFromString(result.data.contents, 'text/xml'));
       return Promise.resolve(parser.parseFromString(result.data.contents, 'text/xml'));
     })
     .catch((err) => Promise.reject(err.message));
@@ -12,7 +13,7 @@ const axiosGet = (url) =>
 const getPosts = (postsNodeList) => {
   const posts = [];
   postsNodeList.forEach(element => {
-    const getSelector = (selector) => element.querySelector(selector).innerHTML;
+    const getSelector = (selector) => element.querySelector(selector).textContent;
     const id = _.uniqueId();
     const title = getSelector('title');
     const link = getSelector('link');
@@ -29,9 +30,10 @@ axiosGet(url)
     if (newDocument.querySelector('parsererror')) {
       return Promise.reject('noRSS');
     }
-
-    const description = newDocument.querySelector('description').innerHTML;
-    const feedName = newDocument.querySelector('title').innerHTML;
+    console.log(url);
+    console.log(newDocument);
+    const description = newDocument.querySelector('description').textContent;
+    const feedName = newDocument.querySelector('title').textContent;
     const postsNodeList = newDocument.querySelectorAll('item');
 
     const feedsPosts = { feedName, description, posts: getPosts(postsNodeList) };

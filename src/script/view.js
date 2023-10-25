@@ -7,7 +7,6 @@ export const newState = (state) => onChange(state, (_path, value) => {
   const input = document.querySelector('#url-input');
   textDanger.innerHTML = '';
   input.classList.remove('is-invalid');
-  console.log(value);
 
     switch(value) {
       case 'repeat': {

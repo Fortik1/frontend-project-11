@@ -24,10 +24,30 @@ export default () => {
       }
     })
 
-    const getUniqueArr = (arrCheck, newArr) => {
-      const nameSet = new Set(arrCheck.map(el => el.title));
+    const modalButton = (el) => {
+      const postId = el.dataset.id;
+      const post = state.posts.find(({ id }) => postId === id);
+      const { title, description } = post;
+      document.querySelector('.modal-header').textContent = title;
+      document.querySelector('.modal-body').textContent = description;
+    }
+
+    const getUniqueArr = (newArr) => {
+      const nameSet = new Set(state.posts.map(el => el.title));
       const uniqArr = newArr.filter(el => !nameSet.has(el.title));
       return uniqArr;
+    }
+
+//  https://lorem-rss.herokuapp.com/feed?length=3&unit=second&interval=5
+    const update = () => {
+      state.useUrl.map(url => {
+        parser(url)
+          .then((res) => {
+            const newPost = getUniqueArr(res.posts);
+            newState(state).posts = [ ...newPost, ...state.posts ];
+          })
+          .catch((err) => console.log(err));
+      });
     }
 
     form.addEventListener('submit', (e) => {
@@ -40,7 +60,7 @@ export default () => {
         button.disabled = true;
         checkValidUrl(url, state.useUrl)
           .then((result) => {
-            parser(url)
+            parser(result)
               .then((res) => {
                 if (res === 'noRSS') {
                   newState(state).status = 'noRSS';
@@ -48,7 +68,7 @@ export default () => {
                   return;
                 }
                 state.feeds.push(res.feedName);
-                const newPost = getUniqueArr(state.posts, res.posts);
+                const newPost = getUniqueArr(res.posts);
 
                 newPost.forEach(element => {
                   state.posts.push(element);
@@ -56,6 +76,10 @@ export default () => {
                 newState(state).state = 'OK';
                 render(newPost);
                 createFeedHTML(res);
+                document.querySelectorAll('[data-bs-toggle]')
+                  .forEach((el) => {
+                    el.addEventListener('click', () => modalButton(el))
+                  })
 
                 state.useUrl.push(result);
                 input.value = '';
@@ -72,7 +96,10 @@ export default () => {
             button.disabled = false;
           });
     });
+const time = () => setTimeout(() => { update(); time() }, 5000);
+time();
 }
+
 
 
 
