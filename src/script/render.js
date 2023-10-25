@@ -18,6 +18,13 @@ const createElementCard = (name) => {
   return divCard;
 }
 
+const addEvent = (e, a) => {
+  e.addEventListener('click', () => {
+    a.classList.replace('fw-bold', 'fw-normal');
+    a.classList.add('link-secondary');
+  });
+}
+
 const createPostHTML = (post) => {
   const postUl = document.querySelector('.posts').querySelector('ul');
   const li = document.createElement('li');
@@ -42,10 +49,8 @@ const createPostHTML = (post) => {
   li.appendChild(a);
   li.appendChild(button);
 
-  li.addEventListener('click', () => {
-    a.classList.replace('fw-bold', 'fw-normal');
-    a.classList.add('link-secondary');
-  });
+  addEvent(a, a);
+  addEvent(button, a);
   postUl.prepend(li);
 };
 
