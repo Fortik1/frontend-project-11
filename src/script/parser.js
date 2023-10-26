@@ -20,7 +20,6 @@ const parser = (url) => axios
     return Promise.reject(err);
   });
 
-
 const getPosts = (newDocument) => {
   const items = newDocument.querySelectorAll('item');
   const posts = [];
@@ -42,17 +41,16 @@ const getPosts = (newDocument) => {
   return posts;
 };
 
-  export default (url) =>
-    parser(url)
-      .then((result) => {
-        const posts = getPosts(result);
-        const description = result.querySelector('description').textContent;
-        const feedName = result.querySelector('title').textContent;
-        return Promise.resolve({ feedName, description, posts });
-      })
-      .catch((err) => {
-        console.log(err);
-      })
+export default (url) => parser(url)
+  .then((result) => {
+    const posts = getPosts(result);
+    const description = result.querySelector('description').textContent;
+    const feedName = result.querySelector('title').textContent;
+    return Promise.resolve({ feedName, description, posts });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 // export default (url) => axiosGet(url)
 //   .then((newDocument) => {
 //     if (newDocument.querySelector('parsererror')) {

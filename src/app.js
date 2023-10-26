@@ -5,7 +5,6 @@ import ru from './locales/ru.js';
 import parser from './script/parser.js';
 import update from './script/update.js';
 
-
 export default () => {
   const form = document.querySelector('form');
 
@@ -36,7 +35,6 @@ export default () => {
 
   //  https://lorem-rss.herokuapp.com/feed?length=3&unit=second&interval=5
 
-
   // const update = () => {
   //   state.useUrl.forEach((url) => {
   //     parser(url)
@@ -66,7 +64,7 @@ export default () => {
               button.disabled = false;
               return;
             }
-            
+
             state.useUrl.push(result);
             watchingPost(state).posts.push(...res.posts);
             watchingFeeds(state).feeds.push(res);

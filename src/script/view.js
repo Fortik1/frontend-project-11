@@ -43,8 +43,8 @@ export default (state) => onChange(state, (_path, value) => {
 
 export const watchingPost = (state) => onChange(state, (_path, formStatus) => {
   render(formStatus);
-})
+});
 
 export const watchingFeeds = (state) => onChange(state, (_path, feed) => {
   createFeedHTML(feed[0]);
-})
+});
