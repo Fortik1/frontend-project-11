@@ -15,7 +15,7 @@ const parser = (url) => axios
   })
   .catch((err) => {
     if (err.message === 'Network Error') {
-      return Promise.reject('NetworkError');
+      return Promise.reject(new Error('NetworkError'));
     }
     return Promise.reject(err);
   });
@@ -51,9 +51,7 @@ export default (url) => parser(url)
     const feedName = result.querySelector('title').textContent;
     return Promise.resolve({ feedName, description, posts });
   })
-  .catch((err) => {
-    return Promise.reject(err);
-  });
+  .catch((err) => Promise.reject(err));
 // export default (url) => axiosGet(url)
 //   .then((newDocument) => {
 //     if (newDocument.querySelector('parsererror')) {
