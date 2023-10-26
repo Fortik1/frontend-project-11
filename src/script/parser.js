@@ -1,41 +1,58 @@
 import axios from 'axios';
 import { uniqueId } from 'lodash';
 
-const axiosGet = (url) => axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
-  .then((result) => {
-    const parser = new DOMParser();
-
-    return Promise.resolve(parser.parseFromString(result.data.contents, 'text/xml'));
+const parser = (url) => axios
+  .get(
+    `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(
+      url,
+    )}`,
+  )
+  .then((response) => {
+    const DOMparser = new DOMParser();
+    return Promise.resolve(
+      DOMparser.parseFromString(response.data.contents, 'text/xml'),
+    );
   })
-  .catch((err) => Promise.reject(err.message));
+  .catch((err) => {
+    if (err.message === 'Network Error') {
+      return Promise.reject(new Error('networkError'));
+    }
+    return Promise.reject(err);
+  });
 
-const getPosts = (postsNodeList) => {
+
+const getPosts = (newDocument) => {
+  const items = newDocument.querySelectorAll('item');
   const posts = [];
-  postsNodeList.forEach((element) => {
-    const getSelector = (selector) => element.querySelector(selector).textContent;
-    const id = uniqueId();
-    const title = getSelector('title');
-    const link = getSelector('link');
-    const description = getSelector('description');
+  items.forEach((item) => {
+    const title = item.querySelector('title').textContent;
+
+    const description = item.querySelector('description').textContent;
+
+    const url = item.querySelector('link').textContent;
 
     posts.push({
-      id, title, link, description,
+      title,
+      description,
+      url,
+      id: uniqueId(),
     });
   });
+
   return posts;
 };
-  export default (url) => new Promise((resolve, reject) => {
-    axiosGet(url)
+
+  export default (url) =>
+    parser(url)
       .then((result) => {
-        const posts = getPosts(result.querySelectorAll('item'));
+        const posts = getPosts(result);
         const description = result.querySelector('description').textContent;
         const feedName = result.querySelector('title').textContent;
-        resolve({ feedName, description, posts });
+        return Promise.resolve({ feedName, description, posts });
       })
       .catch((err) => {
         console.log(err);
       })
-  })
 // export default (url) => axiosGet(url)
 //   .then((newDocument) => {
 //     if (newDocument.querySelector('parsererror')) {
