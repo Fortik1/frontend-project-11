@@ -15,7 +15,7 @@ const parser = (url) => axios
   })
   .catch((err) => {
     if (err.message === 'Network Error') {
-      return Promise.reject(new Error('networkError'));
+      return Promise.reject('NetworkError');
     }
     return Promise.reject(err);
   });
@@ -43,6 +43,9 @@ const getPosts = (newDocument) => {
 
 export default (url) => parser(url)
   .then((result) => {
+    if (result.querySelector('parsererror')) {
+      return Promise.resolve('noRSS');
+    }
     const posts = getPosts(result);
     const description = result.querySelector('description').textContent;
     const feedName = result.querySelector('title').textContent;
