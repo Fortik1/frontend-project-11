@@ -52,7 +52,7 @@ export default (url) => parser(url)
     return Promise.resolve({ feedName, description, posts });
   })
   .catch((err) => {
-    console.log(err);
+    return Promise.reject(err);
   });
 // export default (url) => axiosGet(url)
 //   .then((newDocument) => {
