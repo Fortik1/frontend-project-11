@@ -83,7 +83,7 @@ export default () => {
             newState(state).state = 'OK';
           })
           .catch((err) => {
-            newState(state).status = err;
+            newState(state).status = err.message;
             button.disabled = false;
           });
       })
