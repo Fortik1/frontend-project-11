@@ -56,7 +56,7 @@ const createPostHTML = (post) => {
 
 export const createFeedHTML = (name) => {
   const feedUl = document.querySelector('.feeds').querySelector('ul');
-  console.log(feedUl);
+
   const li = document.createElement('li');
   li.classList.add('list-group-item', 'border-0', 'boreder-end-0');
 
@@ -78,7 +78,7 @@ export default (data) => {
     document.querySelector('.posts').appendChild(createElementCard('Посты'));
     document.querySelector('.feeds').appendChild(createElementCard('Фиды'));
   }
-  console.log(data);
+
   data.forEach((element) => {
     createPostHTML(element);
   });

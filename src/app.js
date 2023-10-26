@@ -3,7 +3,7 @@ import checkValidUrl from './script/checkValidUrl.js';
 import newState, { watchingFeeds, watchingPost } from './script/view.js';
 import ru from './locales/ru.js';
 import parser from './script/parser.js';
-import { update } from './script/update.js';
+import update from './script/update.js';
 
 
 export default () => {
@@ -15,6 +15,7 @@ export default () => {
     status: '',
     feeds: [],
     posts: [],
+    startUpdate: false,
   };
 
   i18next.init({
@@ -65,24 +66,28 @@ export default () => {
               button.disabled = false;
               return;
             }
+            
             state.useUrl.push(result);
             watchingPost(state).posts.push(...res.posts);
             watchingFeeds(state).feeds.push(res);
-            newState(state).state = 'OK';
-            createFeedHTML(res);
             document.querySelectorAll('[data-bs-toggle]')
               .forEach((el) => {
                 el.addEventListener('click', () => modalButton(el));
               });
+
+            if (!state.startUpdate) {
+              state.startUpdate = true;
+              update(state);
+            }
             input.value = '';
             input.focus();
             button.disabled = false;
+            newState(state).state = 'OK';
           })
           .catch((err) => {
             newState(state).status = err;
             button.disabled = false;
-          })
-          .finally(() => update(state));
+          });
       })
       .catch((err) => {
         newState(state).status = err;

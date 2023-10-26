@@ -1,5 +1,6 @@
 import parser from "./parser.js";
 import render from "./render.js";
+import newState from "./view.js";
 
 const getUniqueArr = (newArr, state) => {
   const nameSet = new Set(state.posts.map((el) => el.title));
@@ -7,18 +8,20 @@ const getUniqueArr = (newArr, state) => {
   return uniqArr;
 };
 
-export const update = (state) => {
+const update = (state) => {
+  console.log(state)
   state.useUrl.forEach(url => {
     parser(url)
       .then((newData) => {
         const newPost = getUniqueArr(newData.posts, state);
         if (newPost.length !== 0) {
-          watchingPost(state).posts = [ ...newPost, ...state.posts ];
-        }
-        console.log(newPost);
-        render(newPost);
+          newState(state).posts.push(...newPost);
+          render(newPost);
+        };
       })
-      .catch((err) => console.log(err))
-      .finally(() => setTimeout(() => update(state), 5000));
+      .catch((err) => console.log(err));
   })
+  setTimeout(() => update(state), 5000);
 }
+
+export default update;
