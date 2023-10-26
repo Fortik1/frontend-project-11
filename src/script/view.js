@@ -1,5 +1,6 @@
 import onChange from 'on-change';
 import i18next from 'i18next';
+import render, { createFeedHTML } from './render.js';
 
 export default (state) => onChange(state, (_path, value) => {
   const textDanger = document.querySelector('.feedback');
@@ -39,3 +40,11 @@ export default (state) => onChange(state, (_path, value) => {
     }
   }
 });
+
+export const watchingPost = (state) => onChange(state, (_path, formStatus) => {
+  render(formStatus);
+})
+
+export const watchingFeeds = (state) => onChange(state, (_path, feed) => {
+  createFeedHTML(feed[0]);
+})

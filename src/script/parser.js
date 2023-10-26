@@ -24,19 +24,30 @@ const getPosts = (postsNodeList) => {
   });
   return posts;
 };
-
-export default (url) => axiosGet(url)
-  .then((newDocument) => {
-    if (newDocument.querySelector('parsererror')) {
-      throw new Error('noRSS');
-    }
-    console.log(url);
-    console.log(newDocument);
-    const description = newDocument.querySelector('description').textContent;
-    const feedName = newDocument.querySelector('title').textContent;
-    const postsNodeList = newDocument.querySelectorAll('item');
-
-    const feedsPosts = { feedName, description, posts: getPosts(postsNodeList) };
-    return Promise.resolve(feedsPosts);
+  export default (url) => new Promise((resolve, reject) => {
+    axiosGet(url)
+      .then((result) => {
+        const posts = getPosts(result.querySelectorAll('item'));
+        const description = result.querySelector('description').textContent;
+        const feedName = result.querySelector('title').textContent;
+        resolve({ feedName, description, posts });
+      })
+      .catch((err) => {
+        console.log(err);
+      })
   })
-  .catch((err) => Promise.reject(err));
+// export default (url) => axiosGet(url)
+//   .then((newDocument) => {
+//     if (newDocument.querySelector('parsererror')) {
+//       throw new Error('noRSS');
+//     }
+//     console.log(url);
+//     console.log(newDocument);
+//     const description = newDocument.querySelector('description').textContent;
+//     const feedName = newDocument.querySelector('title').textContent;
+//     const postsNodeList = newDocument.querySelectorAll('item');
+
+//     const feedsPosts = { feedName, description, posts: getPosts(postsNodeList) };
+//     return Promise.resolve(feedsPosts);
+//   })
+//   .catch((err) => Promise.reject(err));

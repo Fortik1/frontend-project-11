@@ -1,15 +1,16 @@
 import i18next from 'i18next';
 import checkValidUrl from './script/checkValidUrl.js';
-import newState from './script/view.js';
+import newState, { watchingFeeds, watchingPost } from './script/view.js';
 import ru from './locales/ru.js';
 import parser from './script/parser.js';
-import render, { createFeedHTML } from './script/render.js';
+import { update } from './script/update.js';
+
 
 export default () => {
   const form = document.querySelector('form');
 
   const state = {
-    useUrl: ['https://lorem-rss.herokuapp.com/feed?length=3&unit=second&interval=5'],
+    useUrl: [],
     validUrl: '',
     status: '',
     feeds: [],
@@ -32,25 +33,20 @@ export default () => {
     document.querySelector('.modal-body').textContent = description;
   };
 
-  const getUniqueArr = (newArr, stateS = state) => {
-    const nameSet = new Set(stateS.posts.map((el) => el.title));
-    const uniqArr = newArr.filter((el) => !nameSet.has(el.title));
-    return uniqArr;
-  };
-
   //  https://lorem-rss.herokuapp.com/feed?length=3&unit=second&interval=5
-  const update = (stateS) => {
-    stateS.useUrl.forEach((url) => {
-      parser(url)
-        .then((res) => {
-          //const newPost = getUniqueArr(res.posts, stateS);
-          render(res.posts);
-          newState(state).posts = [...res.posts, ...stateS.posts];
-        })
-        .catch((err) => console.log(err))
-        .finally(() => setTimeout(() => update(stateS), 5000));
-    });
-  };
+
+
+  // const update = () => {
+  //   state.useUrl.forEach((url) => {
+  //     parser(url)
+  //       .then((res) => {
+  //         const newPost = getUniqueArr(res.posts, state);
+  //         console.log('1')
+  //         newState(state).posts = [...newPost, ...state.posts];
+  //       })
+  //       .catch((err) => console.log(err));
+  //   });
+  // };
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -69,21 +65,15 @@ export default () => {
               button.disabled = false;
               return;
             }
-            state.feeds.push(res.feedName);
-            const newPost = getUniqueArr(res.posts);
-            newPost.forEach((element) => {
-              state.posts.push(element);
-            });
-            console.log(state)
+            state.useUrl.push(result);
+            watchingPost(state).posts.push(...res.posts);
+            watchingFeeds(state).feeds.push(res);
             newState(state).state = 'OK';
-            render(newPost);
             createFeedHTML(res);
             document.querySelectorAll('[data-bs-toggle]')
               .forEach((el) => {
                 el.addEventListener('click', () => modalButton(el));
               });
-
-            state.useUrl.push(result);
             input.value = '';
             input.focus();
             button.disabled = false;
@@ -91,14 +81,14 @@ export default () => {
           .catch((err) => {
             newState(state).status = err;
             button.disabled = false;
-          });
+          })
+          .finally(() => update(state));
       })
       .catch((err) => {
         newState(state).status = err;
         button.disabled = false;
       });
   });
-  update(state);
 };
 
 // const nameSet = new Set(arr1.map(el => el.name));
